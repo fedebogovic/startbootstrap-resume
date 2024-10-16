@@ -38,8 +38,8 @@ jobs:
           git fetch origin dist
           git checkout dist || git checkout --orphan dist
 
-          # Remove all files and directories in the workspace, except the dist folder
-          find . -maxdepth 1 ! -name 'dist' ! -name '.' -exec rm -rf {} \;
+          # Remove all files and directories in the workspace, except the dist folder and .git directory
+          find . -maxdepth 1 ! -name 'dist' ! -name '.' ! -name '.git' -exec rm -rf {} \;
 
           # Move the contents of the dist folder to the root
           mv dist/* .
