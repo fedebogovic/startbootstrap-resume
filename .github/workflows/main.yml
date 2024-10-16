@@ -1,0 +1,42 @@
+name: Update dist branch
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository on the master branch
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+        with:
+          ref: master
+
+      # Install dependencies and build the project
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Adjust Node.js version as needed
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      # Push the content of the dist folder to the dist branch
+      - name: Deploy dist to dist branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan dist
+          git reset --hard
+          git clean -fdx
+          cp -r dist/* .
+          git add .
+          git commit -m "Update dist branch"
+          git push --force origin dist
