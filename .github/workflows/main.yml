@@ -33,10 +33,20 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan dist
-          git reset --hard
-          git clean -fdx
+          
+          # Create a fresh clone of the dist branch
+          git fetch origin dist
+          git checkout dist || git checkout --orphan dist
+
+          # Clean the working directory
+          git rm -rf . || true
+          
+          # Copy the contents of the dist folder to the root of the dist branch
           cp -r dist/* .
+
+          # Add and commit changes
           git add .
-          git commit -m "Update dist branch"
+          git commit -m "Update dist branch with latest build from master"
+
+          # Force push the changes to the dist branch
           git push --force origin dist
