@@ -1,4 +1,4 @@
-name: Update cd branch
+name: Build and Deploy to FTP
 
 on:
   push:
@@ -28,35 +28,11 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # Push only the content of the dist folder to the cd branch
-      - name: Deploy dist to cd branch
+      # Upload the content of the dist folder to the FTP server
+      - name: Upload to FTP server
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Fetch the latest cd branch if it exists, or create it if it doesn't
-          git fetch origin cd || echo "No remote cd branch found. Creating one..."
-          git checkout cd || git checkout --orphan cd
-
-          # Remove all files and directories in the workspace, except the dist folder and .git directory
-          find . -maxdepth 1 ! -name 'dist' ! -name '.' ! -name '.git' -exec rm -rf {} \;
-
-          # Move the contents of the dist folder to the root
-          mv dist/* .
-
-          # Clean up by removing the empty dist folder
-          rmdir dist
-
-          # Add only the new files copied from the dist folder
-          git add --all
-
-          # Commit the changes
-          git commit -m "Create or update cd branch with the latest build"
-
-          # Push the changes to the cd branch without force
-          git push origin cd || git push --set-upstream origin cd
-
-      # Trigger the webhook after successful deployment using secret WEBHOOK_URL
-      - name: Trigger deployment webhook
-        run: |
-          curl -X POST ${{ secrets.WEBHOOK_URL }}
+          sudo apt-get install -y lftp
+          lftp -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }} <<-EOF
+            mirror -R --delete ./dist /public_html
+            quit
+          EOF
