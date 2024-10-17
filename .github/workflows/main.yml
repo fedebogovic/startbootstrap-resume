@@ -1,4 +1,4 @@
-name: Update dist branch
+name: Update cd branch
 
 on:
   push:
@@ -28,15 +28,15 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # Push only the content of the dist folder to the dist branch
-      - name: Deploy dist to dist branch
+      # Push only the content of the dist folder to the cd branch
+      - name: Deploy dist to cd branch
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Fetch the latest dist branch or create it if it doesn't exist
-          git fetch origin dist
-          git checkout dist || git checkout --orphan dist
+          # Fetch the latest cd branch or create it if it doesn't exist
+          git fetch origin cd
+          git checkout cd || git checkout --orphan cd
 
           # Remove all files and directories in the workspace, except the dist folder and .git directory
           find . -maxdepth 1 ! -name 'dist' ! -name '.' ! -name '.git' -exec rm -rf {} \;
@@ -48,16 +48,16 @@ jobs:
           rmdir dist
 
           # Pull the latest changes and rebase to avoid conflicts
-          git pull --rebase origin dist
+          git pull --rebase origin cd
 
           # Add only the new files copied from the dist folder
           git add --all
 
           # Commit the changes
-          git commit -m "Update dist branch with latest build from master"
+          git commit -m "Update cd branch with latest build from master"
 
-          # Push the changes to the dist branch without force
-          git push origin dist
+          # Push the changes to the cd branch without force
+          git push origin cd
 
       # Trigger the webhook after successful deployment using secret WEBHOOK_URL
       - name: Trigger deployment webhook
