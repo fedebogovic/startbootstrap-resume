@@ -13,14 +13,12 @@ jobs:
       # Checkout the repository on the master branch
       - name: Checkout master branch
         uses: actions/checkout@v3
-        with:
-          ref: master
 
       # Install dependencies and build the project
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Ajusta la versión de Node.js si es necesario
+          node-version: '16'
 
       - name: Install dependencies
         run: npm install
@@ -28,11 +26,12 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # Upload the content of the dist folder to the FTP server
-      - name: Upload to FTP server
-        run: |
-          sudo apt-get install -y lftp
-          lftp -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }} <<-EOF
-            mirror -R --delete ./dist /public_html
-            quit
-          EOF
+      # Deploy to FTP using FTP-Deploy-Action
+      - name: Deploy to FTP server
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          ftp-server: ${{ secrets.FTP_SERVER }}
+          ftp-username: ${{ secrets.FTP_USERNAME }}
+          ftp-password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist
+          server-dir: /public_html
