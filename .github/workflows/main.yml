@@ -47,14 +47,17 @@ jobs:
           # Clean up by removing the empty dist folder
           rmdir dist
 
+          # Pull the latest changes and rebase to avoid conflicts
+          git pull --rebase origin dist
+
           # Add only the new files copied from the dist folder
           git add --all
 
           # Commit the changes
           git commit -m "Update dist branch with latest build from master"
 
-          # Force push the changes to the dist branch
-          git push --force origin dist
+          # Push the changes to the dist branch without force
+          git push origin dist
 
       # Trigger the webhook after successful deployment using secret WEBHOOK_URL
       - name: Trigger deployment webhook
