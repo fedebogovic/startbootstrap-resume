@@ -55,3 +55,8 @@ jobs:
 
           # Force push the changes to the dist branch
           git push --force origin dist
+
+      # Trigger the webhook after successful deployment using secret WEBHOOK_URL
+      - name: Trigger deployment webhook
+        run: |
+          curl -X POST ${{ secrets.WEBHOOK_URL }}
