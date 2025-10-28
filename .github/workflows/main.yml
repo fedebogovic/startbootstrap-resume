@@ -3,7 +3,7 @@ name: Deploy to Firebase Hosting (CLI)
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
